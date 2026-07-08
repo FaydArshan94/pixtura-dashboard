@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "motion/react";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 // Import your custom axios instance (adjust the path based on your project structure)
 import instance from "../../lib/axios";
 import { useRouter } from "next/navigation";
@@ -11,7 +12,6 @@ export default function AuthPage() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState("");
 
   const router = useRouter();
 
@@ -25,21 +25,21 @@ export default function AuthPage() {
   // Switch between Login and Sign Up
   const toggleAuthMode = () => {
     setIsSignUp(!isSignUp);
-    setApiError("");
     reset();
   };
 
   // Form submission handler using your custom Axios instance
   const onSubmit = async (data) => {
     setIsLoading(true);
-    setApiError("");
     const endpoint = isSignUp ? "/api/auth/signup" : "/api/auth/login";
     try {
       const response = await instance.post(endpoint, data);
       document.cookie = `token=${response.data.token}; path=/; max-age=7200; SameSite=Lax`;
+      toast.success(isSignUp ? "Account created!" : "Welcome back!");
+
       router.push("/dashboard");
     } catch (error) {
-      setApiError(error.response?.data?.message || "Something went wrong.");
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setIsLoading(false);
     }
@@ -113,13 +113,6 @@ export default function AuthPage() {
           <div className="flex-grow border-t border-slate-200"></div>
         </div>
 
-        {/* Server Side API Error Display */}
-        {apiError && (
-          <div className="mb-4 text-sm font-medium text-red-500 bg-red-50 border border-red-200 rounded-xl p-3 text-center">
-            {apiError}
-          </div>
-        )}
-
         {/* Input Credentials Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
@@ -154,7 +147,7 @@ export default function AuthPage() {
               Username
             </label>
             <input
-              type="username"
+              type="text"
               placeholder="enter username"
               {...register("username", {
                 required: "Username is required",
@@ -245,15 +238,28 @@ export default function AuthPage() {
         </form>
 
         {/* Single Sign-On Option */}
-        {!isSignUp && (
-          <div className="mt-6 text-center">
-            <a
-              href="#"
-              className="inline-flex items-center gap-1 text-sm font-semibold text-[#0066cc] hover:underline"
-            >
-              Login with SSO
-              <span className="text-xs">↗</span>
-            </a>
+        {isSignUp && (
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-2">
+              Username
+            </label>
+            <input
+              type="text"
+              placeholder="enter username"
+              {...register("username", {
+                required: isSignUp ? "Username is required" : false,
+              })}
+              className={`w-full bg-[#edf4fc] border text-slate-800 px-4 py-3.5 rounded-xl outline-none transition-all duration-200 text-base font-medium ${
+                errors.username
+                  ? "border-red-400 focus:border-red-500"
+                  : "border-transparent focus:border-[#0066cc] focus:bg-white focus:ring-2 focus:ring-blue-100"
+              }`}
+            />
+            {errors.username && (
+              <p className="text-xs text-red-500 mt-1 font-medium">
+                {errors.username.message}
+              </p>
+            )}
           </div>
         )}
       </motion.div>

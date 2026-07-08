@@ -12,6 +12,7 @@ import {
   Video,
   LoaderCircle,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import axiosInstance from "../lib/axios";
 
@@ -94,10 +95,11 @@ export default function UploadModal({
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      console.log("No file selected for upload.");
+      toast.error("Please select a file to upload.");
       return;
     }
 
+    const uploadToastId = toast.loading("Uploading...");
     setIsUploading(true);
 
     try {
@@ -109,11 +111,14 @@ export default function UploadModal({
 
       await axiosInstance.post("/api/media/upload/dashboard", formData);
 
+      toast.success("File uploaded!", { id: uploadToastId });
       onUploadSuccess?.();
       handleReset();
       if (onClose) onClose();
     } catch (error) {
-      console.error("Upload failed:", error);
+      toast.error(error?.response?.data?.message || "Upload failed", {
+        id: uploadToastId,
+      });
     } finally {
       setIsUploading(false);
     }

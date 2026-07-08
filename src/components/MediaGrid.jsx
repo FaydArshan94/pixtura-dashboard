@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import instance from "../lib/axios";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const MediaGrid = forwardRef(function MediaGrid(
   { onUploadTrigger, onNewFolderTrigger },
@@ -92,16 +93,22 @@ const MediaGrid = forwardRef(function MediaGrid(
 
   const handleDelete = async (fileId) => {
     if (!fileId) {
-      console.error("File ID is required for deletion.");
+      toast.error("File ID is required for deletion.");
       return;
     }
+
+    const deleteToastId = toast.loading("Deleting...");
+
     try {
       await instance.delete(`${endpoint}/delete/${fileId}`);
       setImages((prevImages) =>
         prevImages.filter((file) => file._id !== fileId),
       );
+      toast.success("File deleted!", { id: deleteToastId });
     } catch (error) {
-      console.error("Error deleting file:", error);
+      toast.error(error?.response?.data?.message || "Delete failed", {
+        id: deleteToastId,
+      });
     }
   };
 
@@ -377,8 +384,20 @@ const MediaGrid = forwardRef(function MediaGrid(
         </div> */}
 
         {loading ? (
-          <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
-            Loading media...
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-white border border-slate-200 rounded-xl overflow-hidden animate-pulse"
+              >
+                <div className="h-40 bg-slate-100" />
+                <div className="p-3 space-y-2">
+                  <div className="h-3 bg-slate-200 rounded w-3/4" />
+                  <div className="h-3 bg-slate-200 rounded w-1/2" />
+                  <div className="h-3 bg-slate-200 rounded w-2/3" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : error ? (
           <div className="rounded-xl border border-rose-200 bg-rose-50 p-6 text-sm text-rose-600">

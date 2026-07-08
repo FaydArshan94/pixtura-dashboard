@@ -8,20 +8,24 @@ import {
   PanelLeft,
   Plus,
   Key,
-  Zap,
   LogOut,
   FileText,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import useStore from "@/lib/useStore";
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useStore();
+  const auth = useStore((state) => state.auth);
+  const logout = useStore((state) => state.logout);
+
+
 
   const handleLogout = async () => {
     await logout();
+    toast.success("Logged out successfully");
     router.push("/login");
   };
 
@@ -166,7 +170,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                       color: "#f1f5f9",
                     }}
                   >
-                    imagix
+                    pixtura
                     <span
                       style={{
                         fontFamily: "'JetBrains Mono', monospace",
@@ -275,22 +279,30 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
         <div className="p-4 border-t border-slate-800/60 bg-slate-900/40 flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-pink-600/80 flex items-center justify-center text-xs font-bold text-white shrink-0">
-                AW
+            {auth?.loading ? (
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-slate-700 animate-pulse shrink-0" />
+                <div className="min-w-0 space-y-2">
+                  <div className="h-2.5 w-24 rounded-full bg-slate-800 animate-pulse" />
+                  <div className="h-2.5 w-32 rounded-full bg-slate-800 animate-pulse" />
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="text-xs font-semibold text-white truncate">
-                  arshan warsi
-                </p>
-                <p className="text-[10px] text-slate-400 truncate">
-                  arshanw94@gmail.com
-                </p>
+            ) : (
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-slate-600/80 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                  {auth?.user?.username?.slice(0, 2).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-white truncate">
+                    {auth?.user?.username || auth?.user?.email}
+                  </p>
+                  <p className="text-[10px] text-slate-400 truncate">
+                    {auth?.user?.email}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="text-slate-500 cursor-pointer hover:text-slate-300">
-              <span className="text-xs">↕</span>
-            </div>
+            )}
+           
           </div>
           <button
             onClick={handleLogout}

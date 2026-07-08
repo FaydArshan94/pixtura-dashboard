@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import instance from "../../lib/axios";
 import { AlertTriangle, Copy, Key, RefreshCw, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
 import AppShell from "../../components/AppShell";
 import { useStore } from "../../lib/useStore";
 
@@ -15,6 +16,7 @@ export default function ApiKeysPage() {
   const auth = useStore((state) => state.auth);
   const fetchCurrentUser = useStore((state) => state.fetchCurrentUser);
   const updateUser = useStore((state) => state.updateUser);
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
   useEffect(() => {
     if (auth?.isAuthenticated) {
@@ -47,12 +49,16 @@ export default function ApiKeysPage() {
       setInfoMessage(
         "Your API key was generated. Copy it now because it will not be shown again.",
       );
-    } catch (error) {
-      setErrorMessage(
-        error?.response?.data?.message ||
-          error.message ||
-          "Unable to generate API key.",
+      toast.success(
+        "API key generated! Save it now — it won't be shown again.",
       );
+    } catch (error) {
+      const message =
+        error?.response?.data?.message ||
+        error.message ||
+        "Unable to generate API key.";
+      setErrorMessage(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -149,22 +155,36 @@ export default function ApiKeysPage() {
                       </div>
                     </div>
 
-                    <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-700">
-                      {rawKey ? (
-                        <code className="block break-all text-sm leading-6 text-slate-900">
-                          {rawKey}
-                        </code>
-                      ) : (
-                        <div className="flex items-center gap-2 text-slate-500">
-                          <AlertTriangle size={16} />
-                          <span>
-                            {isActive
-                              ? "Raw key not available. Regenerate to create a new one."
-                              : "No API key is active."}
-                          </span>
+                    {isPageLoading ? (
+                      <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50 p-5 animate-pulse">
+                        <div className="space-y-3">
+                          <div className="h-4 w-32 rounded bg-slate-200" />
+                          <div className="h-3 w-48 rounded bg-slate-100" />
+                          <div className="h-24 rounded-2xl bg-slate-200" />
+                          <div className="flex gap-3">
+                            <div className="h-11 w-40 rounded-2xl bg-slate-200" />
+                            <div className="h-11 w-28 rounded-2xl bg-slate-100" />
+                          </div>
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-700">
+                        {rawKey ? (
+                          <code className="block break-all text-sm leading-6 text-slate-900">
+                            {rawKey}
+                          </code>
+                        ) : (
+                          <div className="flex items-center gap-2 text-slate-500">
+                            <AlertTriangle size={16} />
+                            <span>
+                              {isActive
+                                ? "Raw key not available. Regenerate to create a new one."
+                                : "No API key is active."}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     <div className="mt-6 flex flex-wrap gap-3">
                       <button
