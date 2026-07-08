@@ -53,15 +53,6 @@ export const useStore = create((set, get) => ({
       set({
         auth: { user, isAuthenticated: true, loading: false, error: null },
       });
-      set({
-        auth: {
-          user,
-          token: null,
-          isAuthenticated: true,
-          loading: false,
-          error: null,
-        },
-      });
       return { user };
     } catch (err) {
       const message = err?.response?.data?.message || err.message;

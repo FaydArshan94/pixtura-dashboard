@@ -30,16 +30,20 @@ export default function AuthPage() {
   };
 
   // Form submission handler using your custom Axios instance
-const onSubmit = async (data) => {
-  try {
-    const response = await instance.post('/api/auth/login', data);
-    // manually set cookie on the Next.js side
-    document.cookie = `token=${response.data.token}; path=/; max-age=3600; SameSite=Lax`;
-    router.push('/dashboard');
-  } catch (error) {
-    setApiError(error.response?.data?.message || "Something went wrong.");
-  }
-};
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    setApiError("");
+    const endpoint = isSignUp ? "/api/auth/signup" : "/api/auth/login";
+    try {
+      const response = await instance.post(endpoint, data);
+      document.cookie = `token=${response.data.token}; path=/; max-age=7200; SameSite=Lax`;
+      router.push("/dashboard");
+    } catch (error) {
+      setApiError(error.response?.data?.message || "Something went wrong.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-[#f3f7f9] flex flex-col justify-center items-center font-sans antialiased px-4 select-none">
       {/* Top Branding Logo */}
