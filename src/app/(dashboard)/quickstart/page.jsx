@@ -155,7 +155,7 @@ export function ImageUploader() {
 }`;
 
   return (
-    <AppShell>
+
       <div className="min-h-screen bg-[#f3f7f9] font-sans antialiased">
         {/* Top Banner */}
         {/* <div className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between">
@@ -402,6 +402,6 @@ export function ImageUploader() {
           </div>
         </div>
       </div>
-    </AppShell>
+
   );
 }

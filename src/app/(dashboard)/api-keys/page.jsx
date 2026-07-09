@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import instance from "../../lib/axios";
+import instance from "../../../lib/axios";
 import { AlertTriangle, Copy, Key, RefreshCw, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import AppShell from "../../components/AppShell";
-import { useStore } from "../../lib/useStore";
+import AppShell from "../../../components/AppShell";
+import { useStore } from "../../../lib/useStore";
 
 export default function ApiKeysPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -74,7 +74,7 @@ export default function ApiKeysPage() {
   };
 
   return (
-    <AppShell>
+
       <main className="min-h-full py-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 rounded-4xl bg-white border border-slate-200 p-8 shadow-sm">
@@ -237,6 +237,6 @@ export default function ApiKeysPage() {
           </div>
         </div>
       </main>
-    </AppShell>
+
   );
 }

@@ -34,7 +34,6 @@ export default function AuthPage() {
     const endpoint = isSignUp ? "/api/auth/signup" : "/api/auth/login";
     try {
       const response = await instance.post(endpoint, data);
-      document.cookie = `token=${response.data.token}; path=/; max-age=7200; SameSite=Lax`;
       toast.success(isSignUp ? "Account created!" : "Welcome back!");
 
       router.push("/dashboard");
