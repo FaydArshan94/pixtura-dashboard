@@ -8,8 +8,6 @@ export default function AuthProvider({ children }) {
 
   useEffect(() => {
   fetchCurrentUser()
-    .then(user => console.log("user fetched", user))
-    .catch(err => console.log("fetch failed", err));
 }, []);
 
   return children;
