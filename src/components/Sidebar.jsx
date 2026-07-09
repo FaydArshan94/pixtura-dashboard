@@ -21,6 +21,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const auth = useStore((state) => state.auth);
   const logout = useStore((state) => state.logout);
 
+  const fetchCurrentUser = useStore((state) => state.fetchCurrentUser);
+
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, [auth]);
 
 
   const handleLogout = async () => {
