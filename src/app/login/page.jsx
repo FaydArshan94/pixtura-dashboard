@@ -29,20 +29,20 @@ export default function AuthPage() {
   };
 
   // Form submission handler using your custom Axios instance
-  const onSubmit = async (data) => {
-    setIsLoading(true);
-    const endpoint = isSignUp ? "/api/auth/signup" : "/api/auth/login";
-    try {
-      const response = await instance.post(endpoint, data);
-      toast.success(isSignUp ? "Account created!" : "Welcome back!");
-
-      router.push("/dashboard");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+ const onSubmit = async (data) => {
+  setIsLoading(true);
+  const endpoint = isSignUp ? "/api/auth/signup" : "/api/auth/login";
+  try {
+    const response = await instance.post(endpoint, data);
+    document.cookie = `token=${response.data.token}; path=/; max-age=7200; SameSite=Lax`;
+    toast.success(isSignUp ? "Account created!" : "Welcome back!");
+    router.push("/dashboard");
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Something went wrong");
+  } finally {
+    setIsLoading(false);
+  }
+};
   return (
     <div className="min-h-screen bg-[#f3f7f9] flex flex-col justify-center items-center font-sans antialiased px-4 select-none">
       {/* Top Branding Logo */}

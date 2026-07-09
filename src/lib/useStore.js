@@ -64,9 +64,15 @@ export const useStore = create(
           const res = await instance.post("/api/auth/login", credentials);
           const { id, email, username } = res.data;
           const user = { id, email, username };
-          set({
-            auth: { user, isAuthenticated: true, loading: false, error: null },
-          });
+          set((state) => ({
+            auth: {
+              ...state.auth,
+              user,
+              isAuthenticated: true,
+              loading: false,
+              error: null,
+            },
+          }));
           return { user };
         } catch (err) {
           const message = err?.response?.data?.message || err.message;
@@ -75,15 +81,6 @@ export const useStore = create(
           }));
           throw err;
         }
-      },
-
-      logout: async () => {
-        try {
-          await instance.post("/api/auth/logout");
-        } catch (e) {}
-        // Clear the Vercel domain cookie too
-        document.cookie = "token=; path=/; max-age=0; SameSite=Lax";
-        get().clearAuth();
       },
 
       fetchCurrentUser: async () => {
@@ -113,6 +110,15 @@ export const useStore = create(
           }));
           throw err;
         }
+      },
+
+      logout: async () => {
+        try {
+          await instance.post("/api/auth/logout");
+        } catch (e) {}
+        // Clear the Vercel domain cookie too
+        document.cookie = "token=; path=/; max-age=0; SameSite=Lax";
+        get().clearAuth();
       },
 
       setAuthToken: (token) => {
