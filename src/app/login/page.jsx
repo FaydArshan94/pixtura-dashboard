@@ -35,6 +35,10 @@ export default function AuthPage() {
   try {
     const response = await instance.post(endpoint, data);
     document.cookie = `token=${response.data.token}; path=/; max-age=7200; SameSite=Lax`;
+
+    const { id, email, username } = response.data;
+    useStore.getState().setAuth({ id, email, username }, response.data.token);
+
     toast.success(isSignUp ? "Account created!" : "Welcome back!");
     router.push("/dashboard");
   } catch (error) {

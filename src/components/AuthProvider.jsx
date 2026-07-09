@@ -7,8 +7,10 @@ export default function AuthProvider({ children }) {
   const { fetchCurrentUser } = useStore();
 
   useEffect(() => {
-    fetchCurrentUser().catch(() => {});
-  }, []);
+  fetchCurrentUser()
+    .then(user => console.log("user fetched", user))
+    .catch(err => console.log("fetch failed", err));
+}, []);
 
   return children;
 }
